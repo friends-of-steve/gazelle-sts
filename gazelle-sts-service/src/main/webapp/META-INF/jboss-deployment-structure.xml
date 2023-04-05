@@ -1,0 +1,41 @@
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.0">
+    <deployment>
+        <exclusions>
+            <module name="org.postgresql"/>
+            <module name="org.picketlink"/>
+        </exclusions>
+        <dependencies>
+            <module name="org.dom4j" export="true"/>
+            <module name="org.apache.commons.collections" export="true" />
+            <module name="org.hibernate" export="true"/>
+            <module name="org.infinispan" export="true"/>
+            <module name="org.hibernate.validator" export="true"/>
+            <module name="javax.faces.api" export="true"/>
+            <module name="com.sun.jsf-impl" export="true"/>
+            <module name="org.javassist"/>
+
+            <!-- embedded picketlink module dependencies -->
+            <module name="javax.security.auth.message.api"/>
+            <module name="javax.security.jacc.api"/>
+            <module name="javax.transaction.api"/>
+            <module name="javax.xml.bind.api"/>
+            <module name="javax.xml.stream.api"/>
+            <module name="javax.servlet.api"/>
+            <module name="org.jboss.common-core"/>
+            <module name="org.jboss.logging"/>
+            <module name="org.jboss.security.xacml"/>
+            <module name="org.picketbox"/>
+            <module name="javax.xml.ws.api"/>
+            <module name="org.apache.log4j"/>
+            <module name="org.apache.santuario.xmlsec">
+                <imports>
+                    <exclude path="javax/*"/>
+                </imports>
+            </module>
+            <module name="javax.api"/>
+            <module name="org.jboss.ws.api"/>
+            <module name="org.jboss.ws.spi"/>
+            <module name="org.apache.cxf"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>

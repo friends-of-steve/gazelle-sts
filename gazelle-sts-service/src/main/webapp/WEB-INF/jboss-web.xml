@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<jboss-web>
+  <security-domain>gazelle-sts</security-domain>
+  <context-root>gazelle-sts</context-root>
+</jboss-web>

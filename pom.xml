@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.ihe.gazelle</groupId>
+    <artifactId>gazelle-sts</artifactId>
+    <version>1.3.2-SNAPSHOT</version>
+    <modules>
+        <module>gazelle-sts-constants</module>
+        <module>gazelle-sts-service</module>
+        <module>gazelle-sts-client</module>
+    </modules>
+    <packaging>pom</packaging>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://gazelle.ihe.net/jira/browse/STS</url>
+    </issueManagement>
+
+
+    <scm>
+        <connection>scm:git:${git.project.url}</connection>
+        <url>scm:git:${git.project.url}</url>
+        <developerConnection>scm:git:${git.project.url}</developerConnection>
+    </scm>
+
+
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <additionalparam>-Xdoclint:none</additionalparam>
+                <git.user.name>gitlab-ci</git.user.name>
+        <git.user.token>changeit</git.user.token>
+        <git.project.url>
+            https://${git.user.name}:${git.user.token}@gitlab.inria.fr/gazelle/applications/test-execution/simulator/gazelle-sts.git
+        </git.project.url>
+        <nexus.url>https://gazelle.ihe.net/nexus</nexus.url>
+        <nexus.path>/content/groups/public/</nexus.path>
+        <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+        <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
+
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>public</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <seam.debug>false</seam.debug>
+                <picketlink.keystore.url>/opt/sts/keystore.jks</picketlink.keystore.url>
+                <picketlink.keystore.pass>password</picketlink.keystore.pass>
+                <picketlink.signing.key.alias>tomcat</picketlink.signing.key.alias>
+                <picketlink.signing.key.pass>password</picketlink.signing.key.pass>
+                <certificate.validator.ws.endpoint>
+                    https://gazelle.ihe.net/gazelle-atna-ejb/CertificateValidatorService/CertificateValidator
+                </certificate.validator.ws.endpoint>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>net.ihe.gazelle</groupId>
+                <artifactId>gazelle-sts-constants</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.seam</groupId>
+                <artifactId>jboss-seam</artifactId>
+                <version>2.3.1.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.spec.javax.ejb</groupId>
+                <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+                <version>1.0.1.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.18.1-GA</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.3</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.15</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>IHE</id>
+            <name>IHE Public Maven Repository Group</name>
+            <url>https://gazelle.ihe.net/nexus/content/groups/public/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>sumo</id>
+            <url>https://gazelle.ihe.net/nexus/content/repositories/releases/</url>
+            <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+            <id>sumo</id>
+            <url>https://gazelle.ihe.net/nexus/content/repositories/snapshots/</url>
+            <layout>default</layout>
+        </snapshotRepository>
+    </distributionManagement>
+
+</project>

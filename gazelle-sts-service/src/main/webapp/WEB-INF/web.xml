@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+
+    <servlet>
+        <servlet-name>GazelleSTSServlet</servlet-name>
+        <servlet-class>net.ihe.gazelle.sts.wstrust.GazelleSTSService</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GazelleSTSServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>GazelleSTSServlet</web-resource-name>
+            <url-pattern>/*</url-pattern>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>user</role-name>
+            <role-name>provider</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>GazelleSTSRealm</realm-name>
+    </login-config>
+
+    <security-role>
+        <role-name>user</role-name>
+    </security-role>
+    <security-role>
+        <role-name>provider</role-name>
+    </security-role>
+
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
