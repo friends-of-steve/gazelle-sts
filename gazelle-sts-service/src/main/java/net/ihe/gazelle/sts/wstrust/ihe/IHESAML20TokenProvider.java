@@ -631,7 +631,7 @@ public class IHESAML20TokenProvider extends AbstractSecurityTokenProvider implem
      *
      * @param context   a {@link org.picketlink.identity.federation.core.wstrust.WSTrustRequestContext} object.
      * @param principal a {@link java.security.Principal} object.
-     * @return a {@link org.picketlink.identity.federation.saml.v2.assertion.SubjectType} object.
+     * @return a {@link org.picketlink.identity.federation.sam l.v2.assertion.SubjectType} object.
      */
     protected SubjectType getSubjectType(WSTrustRequestContext context, Principal principal) {
 

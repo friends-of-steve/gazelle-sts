@@ -64,6 +64,37 @@ public class IHESAMLAssertionWriter extends SAMLAssertionWriter {
         StaxUtil.writeNameSpace(writer, ASSERTION_PREFIX, ASSERTION_NSURI.get());
         StaxUtil.writeDefaultNameSpace(writer, ASSERTION_NSURI.get());
 
+
+        // Added by Matt Blackmon MLB: 10-3-2020 Add the xs namespace instance
+        //logger.warn("MLB Logger WARN: IHESAMLAssertionWriter - Attempting to add the xsi namespace " + JBossSAMLURIConstants.XMLSCHEMA_NSURI.get());
+
+        //I can write the attribute fine... need the namespace....
+        //StaxUtil.writeAttribute(writer, "xsi", JBossSAMLURIConstants.XSI_NSURI.get(),  "xmlns", attributeValue.getXmlns() );
+
+
+        //StaxUtil.writeAttribute(writer, "xs", JBossSAMLURIConstants.XSI_NSURI.get(), "xmlns", "http://www.w3.org/2001/XMLSchema");
+
+        //StaxUtil.setPrefix(writer,"xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        //StaxUtil.writeNameSpace(writer,"xsi", "http://www.w3.org/2001/XMLSchema-instance");
+
+        //StaxUtil.setPrefix(writer,"xs", "http://www.w3.org/2001/XMLSchema");
+        //StaxUtil.writeNameSpace(writer,"xs", "http://www.w3.org/2001/XMLSchema");
+
+        //logger.warn(" MLB Inside write trying to add:" + ASSERTION_PREFIX + " value:" + JBossSAMLConstants.ATTRIBUTE_VALUE.get() + " ASSERTION_NSURI:" + ASSERTION_NSURI.get());
+        //StaxUtil.writeNameSpace(writer, JBossSAMLURIConstants.XSI_PREFIX.get(), JBossSAMLURIConstants.XSI_NSURI.get());
+        //logger.warn("MLB Inside write trying to add ns prefix:" + JBossSAMLURIConstants.XSI_PREFIX.get() + " Namespace:" + JBossSAMLURIConstants.XMLSCHEMA_NSURI.get());
+        //StaxUtil.writeNameSpace(writer, "xsmlb", JBossSAMLURIConstants.XMLSCHEMA_NSURI.get());
+
+        //THIS IS THE WORKING EXAMPLE FROM BELOW:
+        //StaxUtil.writeAttribute(writer, null, JBossSAMLURIConstants.XSI_NSURI.get(), "xmlns",
+        //                attributeValue.getXmlns());
+        //THIS IS NOT WORKING
+
+        // MLB 4-3-2023
+        // StaxUtil.setPrefix(writer, "xs", "http://www.w3.org/2001/XMLSchema");
+        // StaxUtil.writeAttribute(writer, "xs", JBossSAMLURIConstants.XMLSCHEMA_NSURI.get(), "xmlns", "http://www.w3.org/2001/XMLSchema");
+
+
         // Attributes
         StaxUtil.writeAttribute(writer, JBossSAMLConstants.ID.get(), assertion.getID());
         StaxUtil.writeAttribute(writer, JBossSAMLConstants.VERSION.get(), assertion.getVersion());
@@ -269,8 +300,13 @@ public class IHESAMLAssertionWriter extends SAMLAssertionWriter {
     public void writeStringAttributeValue(String attributeValue) throws ProcessingException {
         StaxUtil.writeStartElement(writer, ASSERTION_PREFIX, JBossSAMLConstants.ATTRIBUTE_VALUE.get(),
                 ASSERTION_NSURI.get());
+
+        //MLB 10-9-2020 added from original code... error in deletion?
+
+        // 4-3-13 MLB
         StaxUtil.writeNameSpace(writer, JBossSAMLURIConstants.XSI_PREFIX.get(), JBossSAMLURIConstants.XSI_NSURI.get());
-        StaxUtil.writeNameSpace(writer, "xs", JBossSAMLURIConstants.XMLSCHEMA_NSURI.get());
+        //StaxUtil.writeNameSpace(writer, "xs", JBossSAMLURIConstants.XMLSCHEMA_NSURI.get());
+
         if (attributeValue.startsWith("urn:oid")) {
             StaxUtil.writeAttribute(writer, "xsi", JBossSAMLURIConstants.XSI_NSURI.get(), "type", "xs:anyURI");
         } else {

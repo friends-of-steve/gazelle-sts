@@ -18,29 +18,18 @@
         <url>https://gazelle.ihe.net/jira/browse/STS</url>
     </issueManagement>
 
-
     <scm>
-        <connection>scm:git:${git.project.url}</connection>
-        <url>scm:git:${git.project.url}</url>
-        <developerConnection>scm:git:${git.project.url}</developerConnection>
+        <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/gazelle/Maven/gazelle-sts/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/gazelle/Maven/gazelle-sts/trunk
+        </developerConnection>
+        <url>https://gforge.inria.fr/scm/viewvc.php/Maven/gazelle-sts/trunk/?root=gazelle</url>
     </scm>
-
 
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <additionalparam>-Xdoclint:none</additionalparam>
-                <git.user.name>gitlab-ci</git.user.name>
-        <git.user.token>changeit</git.user.token>
-        <git.project.url>
-            https://${git.user.name}:${git.user.token}@gitlab.inria.fr/gazelle/applications/test-execution/simulator/gazelle-sts.git
-        </git.project.url>
-        <nexus.url>https://gazelle.ihe.net/nexus</nexus.url>
-        <nexus.path>/content/groups/public/</nexus.path>
-        <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
-        <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
-
     </properties>
 
     <profiles>

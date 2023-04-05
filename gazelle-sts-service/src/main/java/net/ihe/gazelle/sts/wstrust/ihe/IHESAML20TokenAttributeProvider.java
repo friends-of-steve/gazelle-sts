@@ -140,7 +140,9 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
             AttributeStatementType attributeStatement = new AttributeStatementType();
             String principalName = context.getCallerPrincipal().getName();
 
+            /* Updated by Matt MLB mblackmo 9/12/2020 Fixing the VALID issue for subject-id attribute value */
             attributeStatement.addAttribute(new ASTChoiceType(getSubjectIdAttribute(principalName)));
+
             attributeStatement.addAttribute(new ASTChoiceType(getOrganizationAttribute(organizationAttributeValue)));
             attributeStatement
                     .addAttribute(new ASTChoiceType(getOrganizationIdAttribute(organizationIdAttributeValue)));
@@ -176,7 +178,21 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
      * @return a {@link org.picketlink.identity.federation.saml.v2.assertion.AttributeType} object.
      */
     protected AttributeType getSubjectIdAttribute(String attributeValue) {
-        return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_BASIC, attributeValue);
+        // Edited my Matt Blackmon MLB mblackmon 9/2020 to resolve the :basic :uri issue
+        // return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_BASIC, attributeValue);
+
+        logger.warn("MLB DEBUG 2022: In getSubjectIdAttribute: " + attributeValue);
+        if (attributeValue .equals("valid")) {
+            logger.warn("MLB DEBUG 2022 valid branch: In getSubjectIdAttribute if branch: Found " + attributeValue );
+            //return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_BASIC, "urn:oid:2.16.840.1.113883.3.7418.2.1");
+            // This return WORKS fine returning the value
+            // 3-31-2023 MLB changed return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI,"urn:oid:2.16.840.1.113883.3.7418.2.1");
+            return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI,"urn:oid:2.16.840.1.113883.3.7418.2.1");
+        }
+        else {
+            logger.warn("MLB DEBUG 2022 valid branch: In getSubjectIdAttribute else branch: Found " + attributeValue );
+            return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI, attributeValue);
+        }
     }
 
     /**
