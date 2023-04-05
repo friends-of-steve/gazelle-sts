@@ -48,7 +48,7 @@ public class STSLoginModule extends UsernamePasswordLoginModule {
      * @throws javax.security.auth.login.LoginException if any.
      */
     protected Group[] getRoleSets() throws LoginException {
-        String username = this.getUsername();
+        String username = this.getUsername().split("\\.")[0];
         AssertionProfile assertionProfile = AssertionProfile.getFromName(username);
         if (assertionProfile != null) {
             Group rolesGroup = new SimpleGroup("Roles");
@@ -73,7 +73,7 @@ public class STSLoginModule extends UsernamePasswordLoginModule {
      * @return a {@link java.lang.String} object.
      */
     protected String getUsersPassword() {
-        String username = this.getUsername();
+        String username = this.getUsername().split("\\.")[0];
         String password = null;
         if (username != null) {
             password = AssertionProfile.getFromName(username).getPassword();

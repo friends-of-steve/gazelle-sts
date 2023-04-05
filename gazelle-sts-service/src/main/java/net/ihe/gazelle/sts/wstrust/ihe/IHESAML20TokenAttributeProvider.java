@@ -92,6 +92,9 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
     private String authzConsentAttributeValue;
     private String resourceIDAttributeValue;
 
+    // Add Steve Moore, 2023.04.01, to support code value lookup
+    private CodedValueFactory codedValueFactory = new CodedValueFactory();
+
     /**
      * {@inheritDoc}
      */
@@ -297,6 +300,14 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
                     AssertionProperties.Keys.ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_CODESYSTEMNAME);
             purposeofuseAttributeValueDisplayName = assertionProperties.getProperty(
                     AssertionProperties.Keys.ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_DISPLAYNAME);
+        } else if (principalName.startsWith(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())) {
+            String[] tokens = principalName.split("\\.");
+            String identifier = tokens[1];
+            CodedValue codedValue = codedValueFactory.getCodedValue(identifier);
+            purposeofuseAttributeValueCode           = codedValue.getCode();
+            purposeofuseAttributeValueCodeSystem     = codedValue.getCodingSystemUID();
+            purposeofuseAttributeValueCodeSystemName = codedValue.getCodingSystemName();
+            purposeofuseAttributeValueDisplayName    = codedValue.getDisplayName();
         } else {
             purposeofuseAttributeValueCode = assertionProperties.getProperty(
                     AssertionProperties.Keys.ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL1_CODE);
