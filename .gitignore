@@ -8,6 +8,11 @@
 
 # /gazelle-sts-client/
 /gazelle-sts-client/*.iml
+/gazelle-sts-client/target/
 
 # /gazelle-sts-service/
 /gazelle-sts-service/*.iml
+/gazelle-sts-service/target/
+
+# /gazelle-sts-constants
+/gazelle-sts-constants/target/

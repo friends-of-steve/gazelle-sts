@@ -37,17 +37,17 @@ public class CodedValueFactory {
             codedValueMap.put("COVERAGE",     new CodedValue("COVERAGE",    "COVERAGE",     "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Government Benefits Determination"));
 
             // Code value is OK, but the coding system UID is wrong.
-            codedValueMap.put("TREATMENT-OID",    new CodedValue("TREATMENT",   "TREATMENT",    "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Treatment"));
-            codedValueMap.put("PAYMENT-OID",      new CodedValue("PAYMENT",     "PAYMENT",      "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Payment"));
-            codedValueMap.put("OPERATIONS-OID",   new CodedValue("OPERATIONS",  "OPERATIONS",   "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Health Care Operations"));
-            codedValueMap.put("PUBLICHEALTH-OID", new CodedValue("PUBLICHEALTH","PUBLICHEALTH", "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Public Health"));
-            codedValueMap.put("REQUEST-OID",      new CodedValue("REQUEST",     "REQUEST",      "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Individual Access Services"));
-            codedValueMap.put("COVERAGE-OID",     new CodedValue("COVERAGE",    "COVERAGE",     "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Government Benefits Determination"));
+            codedValueMap.put("TREATMENTOID",    new CodedValue("TREATMENT",   "TREATMENT",    "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Treatment"));
+            codedValueMap.put("PAYMENTOID",      new CodedValue("PAYMENT",     "PAYMENT",      "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Payment"));
+            codedValueMap.put("OPERATIONSOID",   new CodedValue("OPERATIONS",  "OPERATIONS",   "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Health Care Operations"));
+            codedValueMap.put("PUBLICHEALTHOID", new CodedValue("PUBLICHEALTH","PUBLICHEALTH", "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Public Health"));
+            codedValueMap.put("REQUESTOID",      new CodedValue("REQUEST",     "REQUEST",      "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Individual Access Services"));
+            codedValueMap.put("COVERAGEOID",     new CodedValue("COVERAGE",    "COVERAGE",     "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Government Benefits Determination"));
 
             // Correct coding system, but a code that does not exist
             codedValueMap.put("REASSURANCE",      new CodedValue("REASSURANCE",      "REASSURANCE", "2.16.840.1.113883.3.7204.1.5.2.1", "RCE-purpose", "Text"));
             // TREATMENT code from NHIN coding system
-            codedValueMap.put("LEGACY-TREATMENT",  new CodedValue("LEGACY-TREATMENT", "TREATMENT",  "2.16.840.1.113883.3.18.7.1", "nhin-purpose", "Legacy NHIN POU Treatment"));
+            codedValueMap.put("LEGACYTREATMENT",  new CodedValue("LEGACY-TREATMENT", "TREATMENT",  "2.16.840.1.113883.3.18.7.1", "nhin-purpose", "Legacy NHIN POU Treatment"));
         }
     }
 }
