@@ -49,6 +49,13 @@ public abstract class AssertionProperties {
         }
     }
 
+    public String getProperty(String key) {
+        String propertyValue = getProperties().getProperty(key);
+
+        // propertyValue is allowed to be null. Let the caller manage that
+        return propertyValue;
+    }
+
     /**
      * <p>getPropertyFilePath.</p>
      *
@@ -111,7 +118,12 @@ public abstract class AssertionProperties {
         ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_CODE("AttributeStatement.PurposeOfUse.Level2.code"),
         ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_CODESYSTEM("AttributeStatement.PurposeOfUse.Level2.codeSystem"),
         ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_CODESYSTEMNAME("AttributeStatement.PurposeOfUse.Level2.codeSystemName"),
-        ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_DISPLAYNAME("AttributeStatement.PurposeOfUse.Level2.displayName");
+        ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_DISPLAYNAME("AttributeStatement.PurposeOfUse.Level2.displayName"),
+
+        ATTRIBUTESTATEMENT_CSP_BASE("AttributeStatement.CSP"),
+        ATTRIBUTESTATEMENT_VALIDATEDATTRIBUTES_BASE("AttributeStatement.ValidatedAttributes");
+
+
 
         private String keyValue;
 

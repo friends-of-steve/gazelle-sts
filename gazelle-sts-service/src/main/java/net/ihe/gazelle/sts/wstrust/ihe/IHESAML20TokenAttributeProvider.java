@@ -23,10 +23,11 @@ import java.util.Map;
  */
 public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttributeProvider {
 
-    /**
-     * Constant <code>NAMEFORMAT_BASIC="urn:oasis:names:tc:SAML:2.0:attrname-fo"{trunked}</code>
-     */
+    /*
+      Constant <code>NAMEFORMAT_BASIC="urn:oasis:names:tc:SAML:2.0:attrname-fo"{trunked}</code>
+
     public static final String NAMEFORMAT_BASIC = "urn:oasis:names:tc:SAML:2.0:attrname-format:basic";
+     */
     /**
      * Constant <code>NAMEFORMAT_URI="urn:oasis:names:tc:SAML:2.0:attrname-fo"{trunked}</code>
      */
@@ -93,7 +94,7 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
     private String resourceIDAttributeValue;
 
     // Add Steve Moore, 2023.04.01, to support code value lookup
-    private CodedValueFactory codedValueFactory = new CodedValueFactory();
+    private final CodedValueFactory codedValueFactory = new CodedValueFactory();
 
     /**
      * {@inheritDoc}
@@ -158,6 +159,11 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
             AttributeType purposeOfUseAttribute = buildPurposeOfUseAttribute(principalName, assertionProperties);
             attributeStatement.addAttribute(new ASTChoiceType(purposeOfUseAttribute));
 
+            // Augment with additional attributes that are keyed from the principalName.
+            // Not all values of principalName will trigger these additional attributes.
+            attributeStatement = augmentAttributeStatement(attributeStatement, principalName);
+
+
             if (context.getCallerPrincipal().getName().equals(AssertionProfile.WITH_AUTHZ_CONSENT.getName())) {
                 attributeStatement
                         .addAttribute(new ASTChoiceType(getAuthzConsentAttribute(authzConsentAttributeValue)));
@@ -196,6 +202,61 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
             logger.warn("MLB DEBUG 2022 valid branch: In getSubjectIdAttribute else branch: Found " + attributeValue );
             return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI, attributeValue);
         }
+    }
+
+    /**
+     * <p>augmentAttributeStatement.</p>
+     * Semi hard-coded method that adds to the AttributeStatement list.
+     * The method constructs a key from the basenames of two properties plus the principalName.
+     * If we find values for those keys, we add them to the attribute list.
+     * @param statement a {@link org.picketlink.identity.federation.saml.v2.assertion.AttributeStatementType;} object.
+     * @param principalName a {@link java.lang.String;} object.
+     * @return a {@link org.picketlink.identity.federation.saml.v2.assertion.AttributeType} object.
+     */
+
+    private AttributeStatementType augmentAttributeStatement(AttributeStatementType statement, String principalName) {
+
+        AssertionProperties assertionProperties = provideAssertionProperties();
+
+        // This code could be reduced. I chose readability over efficiency.
+
+        String keyCSP = AssertionProperties.Keys.ATTRIBUTESTATEMENT_CSP_BASE.getKeyValue() + "." + principalName;
+        String valueCSP = assertionProperties.getProperty(keyCSP);
+        statement = addAttribute(statement, valueCSP);
+
+        String keyValidatedAttributes = AssertionProperties.Keys.ATTRIBUTESTATEMENT_VALIDATEDATTRIBUTES_BASE.getKeyValue() + "." + principalName;
+        String valueValidatedAttributes = assertionProperties.getProperty(keyValidatedAttributes);
+        statement = addAttribute(statement, valueValidatedAttributes);
+
+        return statement;
+    }
+
+    /**
+     * <p>addAttribute.</p>
+     * Method accepts a tab-delimited string that represents four tokens that will comprise a new attribute.
+     * If the caller passes a null string or empty string, the method does not alter the Attribute Statement.
+     * If the token string yields 4 tokens, a new attribute is created and added to the list of attributes.
+     * The tokens, in order, are:
+     *  name
+     *  friendlyName
+     *  nameFormat
+     *  value
+     * @param statement a {@link org.picketlink.identity.federation.saml.v2.assertion.AttributeStatementType;} object.
+     * @param tokenString a {@link java.lang.String;} object.
+     * @return a {@link org.picketlink.identity.federation.saml.v2.assertion.AttributeType} object.
+     */
+    private AttributeStatementType addAttribute(AttributeStatementType statement, String tokenString) {
+        if (tokenString != null && !tokenString.isEmpty()) {
+            String[] tokens = tokenString.split("\t");
+            if (tokens.length == 4) {
+                String name           = tokens[0];
+                String friendlyName   = tokens[1];
+                String nameFormat     = tokens[2];
+                String attributeValue = tokens[3];
+                statement.addAttribute(new ASTChoiceType(getAttribute(name, friendlyName, nameFormat, attributeValue)));
+            }
+        }
+        return statement;
     }
 
     /**
@@ -247,10 +308,10 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
      */
     protected AttributeType buildRoleAttribute(String principalName, AssertionProperties assertionProperties) {
 
-        String roleAttributeValueCode = "";
-        String roleAttributeValueCodeSystem = "";
-        String roleAttributeValueCodeSystemName = "";
-        String roleAttributeValueDisplayName = "";
+        String roleAttributeValueCode;
+        String roleAttributeValueCodeSystem;
+        String roleAttributeValueCodeSystemName;
+        String roleAttributeValueDisplayName;
 
         if (principalName.equals(AssertionProfile.SECOND_ROLE.getName())) {
             roleAttributeValueCode = assertionProperties.getProperty(
@@ -286,10 +347,10 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
      */
     protected AttributeType buildPurposeOfUseAttribute(String principalName, AssertionProperties assertionProperties) {
 
-        String purposeofuseAttributeValueCode = "";
-        String purposeofuseAttributeValueCodeSystem = "";
-        String purposeofuseAttributeValueCodeSystemName = "";
-        String purposeofuseAttributeValueDisplayName = "";
+        String purposeofuseAttributeValueCode;
+        String purposeofuseAttributeValueCodeSystem;
+        String purposeofuseAttributeValueCodeSystemName;
+        String purposeofuseAttributeValueDisplayName;
 
         if (principalName.equals(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())) {
             purposeofuseAttributeValueCode = assertionProperties.getProperty(
@@ -373,6 +434,14 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
         codedElement.setDisplayName(displayName);
         codedElementAttribute.addAttributeValue(codedElement);
         return codedElementAttribute;
+    }
+
+    protected AttributeType getCSPAttribute(String attributeValue) {
+        return getAttribute("csp", "CSP", "foo", attributeValue);
+    }
+
+    protected AttributeType getValidatedAttributesAttribute(String attributeValue) {
+        return getAttribute("validated_attributes", "Validated Attributes", "", attributeValue);
     }
 
     /**
