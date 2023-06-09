@@ -47,7 +47,11 @@ public class CodedValueFactory {
             // Correct coding system, but a code that does not exist
             codedValueMap.put("REASSURANCE",      new CodedValue("REASSURANCE",      "REASSURANCE", "2.16.840.1.113883.3.7204.1.5.2.1", "RCE-purpose", "Text"));
             // TREATMENT code from NHIN coding system
-            codedValueMap.put("LEGACYTREATMENT",  new CodedValue("LEGACY-TREATMENT", "TREATMENT",  "2.16.840.1.113883.3.18.7.1", "nhin-purpose", "Legacy NHIN POU Treatment"));
+            codedValueMap.put("LEGACYTREATMENT",  new CodedValue("LEGACYTREATMENT", "TREATMENT",  "2.16.840.1.113883.3.18.7.1", "nhin-purpose", "Legacy NHIN POU Treatment"));
+
+            // This is a case where the proper coded value is used. There are other parts of the SAML assertions
+            // that are tweaked to generate an error condition.
+            codedValueMap.put("REQUESTATTRS",     new CodedValue("REQUESTATTRS",     "REQUEST",      "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Individual Access Services"));
         }
     }
 }
