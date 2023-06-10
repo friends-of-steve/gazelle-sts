@@ -96,6 +96,8 @@ public abstract class AssertionProperties {
         ATTRIBUTESTATEMENT_ORGANIZATION_VALUE("AttributeStatement.Organization.Value"),
         ATTRIBUTESTATEMENT_ORGANIZATIONID_VALUE("AttributeStatement.OrganizationId.Value"),
         ATTRIBUTESTATEMENT_HOMECOMMUNITYID_VALUE("AttributeStatement.HomeCommunityId.Value"),
+        ATTRIBUTESTATEMENT_HOMECOMMUNITYID_NAME("AttributeStatement.HomeCommunityId.Name"),
+        ATTRIBUTESTATEMENT_HOMECOMMUNITYID_ALTERNATENAME("AttributeStatement.HomeCommunityId.AlternateName"),
 
         ATTRIBUTESTATEMENT_AUTHZCONSENT_VALUE("AttributeStatement.Authzconsent.Value"),
         ATTRIBUTESTATEMENT_RESOURCEID_VALUE("AttributeStatement.ResourceId.Value"),

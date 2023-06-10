@@ -90,6 +90,8 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
     private String organizationAttributeValue;
     private String organizationIdAttributeValue;
     private String homeCommunityIdAttributeValue;
+    private String homeCommunityIdAttributeName;
+    private String homeCommunityIdAttributeAlternateName;
     private String authzConsentAttributeValue;
     private String resourceIDAttributeValue;
 
@@ -109,6 +111,11 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
                 AssertionProperties.Keys.ATTRIBUTESTATEMENT_ORGANIZATIONID_VALUE);
         homeCommunityIdAttributeValue = assertionProperties.getProperty(
                 AssertionProperties.Keys.ATTRIBUTESTATEMENT_HOMECOMMUNITYID_VALUE);
+        homeCommunityIdAttributeName = assertionProperties.getProperty(
+                AssertionProperties.Keys.ATTRIBUTESTATEMENT_HOMECOMMUNITYID_NAME);
+        homeCommunityIdAttributeAlternateName = assertionProperties.getProperty(
+                AssertionProperties.Keys.ATTRIBUTESTATEMENT_HOMECOMMUNITYID_ALTERNATENAME);
+
         authzConsentAttributeValue = assertionProperties.getProperty(
                 AssertionProperties.Keys.ATTRIBUTESTATEMENT_AUTHZCONSENT_VALUE);
         resourceIDAttributeValue = assertionProperties.getProperty(
@@ -127,7 +134,7 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
         attributeStatement.addAttribute(new ASTChoiceType(getSubjectIdAttribute(DEFAULT_SUBJECTID_VALUE)));
         attributeStatement.addAttribute(new ASTChoiceType(getOrganizationAttribute(organizationAttributeValue)));
         attributeStatement.addAttribute(new ASTChoiceType(getOrganizationIdAttribute(organizationIdAttributeValue)));
-        attributeStatement.addAttribute(new ASTChoiceType(getHomeCommunityIdAttribute(homeCommunityIdAttributeValue)));
+        attributeStatement.addAttribute(new ASTChoiceType(getHomeCommunityIdAttribute(homeCommunityIdAttributeName, homeCommunityIdAttributeValue)));
 
         return attributeStatement;
     }
@@ -151,7 +158,12 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
             attributeStatement
                     .addAttribute(new ASTChoiceType(getOrganizationIdAttribute(organizationIdAttributeValue)));
             attributeStatement
-                    .addAttribute(new ASTChoiceType(getHomeCommunityIdAttribute(homeCommunityIdAttributeValue)));
+                    .addAttribute(new ASTChoiceType(getHomeCommunityIdAttribute(homeCommunityIdAttributeName, homeCommunityIdAttributeValue)));
+
+            if (homeCommunityIdAttributeAlternateName != null && ! homeCommunityIdAttributeAlternateName.isEmpty()) {
+                attributeStatement
+                        .addAttribute(new ASTChoiceType(getHomeCommunityIdAttribute(homeCommunityIdAttributeAlternateName, homeCommunityIdAttributeValue)));
+            }
 
             AttributeType roleAttribute = buildRoleAttribute(principalName, assertionProperties);
             attributeStatement.addAttribute(new ASTChoiceType(roleAttribute));
@@ -282,11 +294,16 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
     /**
      * <p>getHomeCommunityIdAttribute.</p>
      *
+     * @param attributeName a {@link java.lang.String} object.
      * @param attributeValue a {@link java.lang.String} object.
      * @return a {@link org.picketlink.identity.federation.saml.v2.assertion.AttributeType} object.
      */
-    protected AttributeType getHomeCommunityIdAttribute(String attributeValue) {
-        return getAttribute(HOMECOMMUNITYID_NAME, HOMECOMMUNITYID_FRIENDLYNAME, NAMEFORMAT_URI, attributeValue);
+    protected AttributeType getHomeCommunityIdAttribute(String attributeName, String attributeValue) {
+        if (attributeName == null || attributeName.isEmpty()) {
+            return getAttribute(HOMECOMMUNITYID_NAME, HOMECOMMUNITYID_FRIENDLYNAME, NAMEFORMAT_URI, attributeValue);
+        } else {
+            return getAttribute(attributeName, HOMECOMMUNITYID_FRIENDLYNAME, NAMEFORMAT_URI, attributeValue);
+        }
     }
 
     /**
