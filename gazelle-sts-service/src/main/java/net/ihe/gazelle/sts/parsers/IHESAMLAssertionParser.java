@@ -133,15 +133,21 @@ public class IHESAMLAssertionParser extends SAMLAssertionParser {
             } else if (JBossSAMLConstants.CONDITIONS.get().equalsIgnoreCase(tag)) {
                 SAMLConditionsParser conditionsParser = new SAMLConditionsParser();
                 ConditionsType conditions = (ConditionsType) conditionsParser.parse(xmlEventReader);
-
                 assertion.setConditions(conditions);
-            } else if (JBossSAMLConstants.AUTHN_STATEMENT.get().equalsIgnoreCase(tag)) {
-                AuthnStatementType authnStatementType = SAMLParserUtil.parseAuthnStatement(xmlEventReader);
-                assertion.addStatement(authnStatementType);
+
+            /* The order of these next two "else if" statements was revered 2023.06.10
+               per https://gazelle.ihe.net/jira/servicedesk/customer/portal/15/SEQUOIA-423
+             */
+
             } else if (JBossSAMLConstants.ATTRIBUTE_STATEMENT.get().equalsIgnoreCase(tag)) {
                 AttributeStatementType attributeStatementType = IHESAMLAttributeStatementParser
                         .parseAttributeStatement(xmlEventReader);
                 assertion.addStatement(attributeStatementType);
+
+            } else if (JBossSAMLConstants.AUTHN_STATEMENT.get().equalsIgnoreCase(tag)) {
+                AuthnStatementType authnStatementType = SAMLParserUtil.parseAuthnStatement(xmlEventReader);
+                assertion.addStatement(authnStatementType);
+
             } else if (AUTHZ_DECISION_STATEMENT.equals(tag)) {
                 AuthzDecisionStatementType authzDecisionStatementType = parseAuthzDecisionStatement(xmlEventReader);
                 assertion.addStatement(authzDecisionStatementType);
