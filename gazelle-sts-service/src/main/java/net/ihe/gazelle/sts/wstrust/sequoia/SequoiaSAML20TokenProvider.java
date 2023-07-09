@@ -293,16 +293,30 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
                 reason = "Validation failure: unable to verify assertion lifetime: " + ce.getMessage();
             }
 
+
+            /*
+            MLB 07-05-2023 Issue confirmed as still relevant. Not yet repaired by IHE services.
+
+            This next segment of code ASSUMES the AuthnStatement is the next element in the XML,
+            but that is not always the case. Indeed, it is NOT the case with Epic.
+
+            MLB 2022-04-20 There is an issue here in that the order of the elements is assumed incorrectly to be a sequence.
+            This causes a fault in EPIC system. See JIRA SEQUOIA-423
+
+            https://gazelle.ihe.net/jira/servicedesk/customer/portal/15/SEQUOIA-423
+
+             */
             // III. The AutnContextClassRef shall be defined
             try {
-
+                logger.debug("MLB DEBUG 2023: Processing AuthnContextClassRef...");
                 Object[] tab_statements = assertion.getStatements().toArray();
-                String value = (((AuthnStatementType) tab_statements[0]).getAuthnContext().getSequence().getClassRef()
+                logger.debug("MLB DEBUG 2023: Assertion Object Array" + Arrays.toString(tab_statements));
+                /* String value = (((AuthnStatementType) tab_statements[0]).getAuthnContext().getSequence().getClassRef()
                         .getValue()).toString();
                 if (value.equals("urn:oasis:names:tc:SAML:2.0:ac:classes:Invalid")) {
                     code = WSTrustConstants.STATUS_CODE_INVALID;
                     reason = "Validation failure: invalid AuthnStatement parameter";
-                }
+                } */
 
             } catch (Exception ce) {
                 code = WSTrustConstants.STATUS_CODE_INVALID;

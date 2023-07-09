@@ -208,7 +208,9 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
             //return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_BASIC, "urn:oid:2.16.840.1.113883.3.7418.2.1");
             // This return WORKS fine returning the value
             // 3-31-2023 MLB changed return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI,"urn:oid:2.16.840.1.113883.3.7418.2.1");
-            return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI,"urn:oid:2.16.840.1.113883.3.7418.2.1");
+            // return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI,"urn:oid:2.16.840.1.113883.3.7418.2.1");
+            // 07-05-2023 MLB changed return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI,"urn:oid:2.16.840.1.113883.3.7204.1.3.1.2");
+            return getAttribute(SUBJECTID_NAME, SUBJECTID_FRIENDLYNAME, NAMEFORMAT_URI,"urn:oid:2.16.840.1.113883.3.7204.1.3.1.2");
         }
         else {
             logger.warn("MLB DEBUG 2022 valid branch: In getSubjectIdAttribute else branch: Found " + attributeValue );

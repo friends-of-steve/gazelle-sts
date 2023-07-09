@@ -3,6 +3,8 @@ package net.ihe.gazelle.sts.parsers;
 import org.jboss.security.xacml.core.model.context.RequestType;
 import org.jboss.security.xacml.core.model.context.ResponseType;
 import org.picketlink.common.ErrorCodes;
+import org.picketlink.common.PicketLinkLogger;
+import org.picketlink.common.PicketLinkLoggerFactory;
 import org.picketlink.common.constants.JBossSAMLConstants;
 import org.picketlink.common.exceptions.ParsingException;
 import org.picketlink.common.util.DocumentUtil;
@@ -59,6 +61,11 @@ public class IHESAMLAssertionParser extends SAMLAssertionParser {
     private static final String NAMESPACE = "Namespace";
     private final String ASSERTION = JBossSAMLConstants.ASSERTION.get();
 
+    //MLB Added 7-2023 for enhanced debugging
+    private static final PicketLinkLogger logger = PicketLinkLoggerFactory.getLogger();
+    private int AttributeCount = 0;
+    private int AuthnStatementCount = 0;
+
     /** {@inheritDoc} */
     @Override
     public Object parse(XMLEventReader xmlEventReader) throws ParsingException {
@@ -78,6 +85,7 @@ public class IHESAMLAssertionParser extends SAMLAssertionParser {
         StaxParserUtil.validate(startElement, ASSERTION);
         AssertionType assertion = parseBaseAttributes(startElement);
 
+        logger.warn("MLB DEBUG 2023: **********Begin processing of SAML components...******************************");
         // Peek at the next event
         while (xmlEventReader.hasNext()) {
             XMLEvent xmlEvent = StaxParserUtil.peek(xmlEventReader);
@@ -110,17 +118,22 @@ public class IHESAMLAssertionParser extends SAMLAssertionParser {
             String tag = StaxParserUtil.getStartElementName(peekedElement);
 
             // Added for IHE attributes Role and PurposeOfUSe support
+
+
+
             if (tag.equals(ATTRIBUTE_VALUE)) {
                 break;
             }
             // End of addition
 
             if (tag.equals(JBossSAMLConstants.SIGNATURE.get())) {
+                logger.debug("MLB DEBUG 2023: Found signature...");
                 assertion.setSignature(StaxParserUtil.getDOMElement(xmlEventReader));
                 continue;
             }
 
             if (JBossSAMLConstants.ISSUER.get().equalsIgnoreCase(tag)) {
+                logger.debug("MLB DEBUG 2023: Found Issuer...");
                 startElement = StaxParserUtil.getNextStartElement(xmlEventReader);
                 String issuerValue = StaxParserUtil.getElementText(xmlEventReader);
                 NameIDType issuer = new NameIDType();
@@ -128,30 +141,49 @@ public class IHESAMLAssertionParser extends SAMLAssertionParser {
 
                 assertion.setIssuer(issuer);
             } else if (JBossSAMLConstants.SUBJECT.get().equalsIgnoreCase(tag)) {
+                logger.debug("MLB DEBUG 2023: Found subject...");
                 SAMLSubjectParser subjectParser = new SAMLSubjectParser();
                 assertion.setSubject((SubjectType) subjectParser.parse(xmlEventReader));
             } else if (JBossSAMLConstants.CONDITIONS.get().equalsIgnoreCase(tag)) {
+                logger.debug("MLB DEBUG 2023: Found conditions...");
                 SAMLConditionsParser conditionsParser = new SAMLConditionsParser();
                 ConditionsType conditions = (ConditionsType) conditionsParser.parse(xmlEventReader);
+
                 assertion.setConditions(conditions);
+
+                //MLB 2022-04-18 Can it be this simple as to flip the next two? Check attribute statement first
+                //MLB 2023-06-28 Added back in
 
             /* The order of these next two "else if" statements was revered 2023.06.10
                per https://gazelle.ihe.net/jira/servicedesk/customer/portal/15/SEQUOIA-423
              */
 
             } else if (JBossSAMLConstants.ATTRIBUTE_STATEMENT.get().equalsIgnoreCase(tag)) {
+                AttributeCount++;
+                logger.debug("MLB DEBUG 2023: Found an attribute statement... Count is " + AttributeCount);
                 AttributeStatementType attributeStatementType = IHESAMLAttributeStatementParser
                         .parseAttributeStatement(xmlEventReader);
                 assertion.addStatement(attributeStatementType);
 
+
             } else if (JBossSAMLConstants.AUTHN_STATEMENT.get().equalsIgnoreCase(tag)) {
+                AuthnStatementCount++;
+                logger.debug("MLB DEBUG 2023: Found an authn statement... AuthnStatement count is " + AuthnStatementCount);
                 AuthnStatementType authnStatementType = SAMLParserUtil.parseAuthnStatement(xmlEventReader);
                 assertion.addStatement(authnStatementType);
+            } else if (JBossSAMLConstants.ATTRIBUTE_STATEMENT.get().equalsIgnoreCase(tag)) {
+                logger.debug("MLB DEBUG 2023: Found an attribute statement (second check if)... Count is " + AttributeCount);
+                AttributeStatementType attributeStatementType = IHESAMLAttributeStatementParser
+                        .parseAttributeStatement(xmlEventReader);
+                assertion.addStatement(attributeStatementType);
+
+
 
             } else if (AUTHZ_DECISION_STATEMENT.equals(tag)) {
                 AuthzDecisionStatementType authzDecisionStatementType = parseAuthzDecisionStatement(xmlEventReader);
                 assertion.addStatement(authzDecisionStatementType);
             } else if (JBossSAMLConstants.STATEMENT.get().equalsIgnoreCase(tag)) {
+                logger.debug("MLB DEBUG 2023: Found an statement statement...");
                 startElement = StaxParserUtil.getNextStartElement(xmlEventReader);
 
                 String xsiTypeValue = StaxParserUtil.getXSITypeValue(startElement);
