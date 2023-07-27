@@ -21,6 +21,7 @@ import net.ihe.gazelle.sts.config.AssertionProperties;
 import net.ihe.gazelle.sts.config.SequoiaAssertionProperties;
 import net.ihe.gazelle.sts.constants.AssertionProfile;
 import net.ihe.gazelle.sts.saml.IHESAMLUtil;
+import net.ihe.gazelle.sts.wstrust.ihe.CodedValueFactory;
 import net.ihe.gazelle.sts.wstrust.ihe.IHESAML20TokenProvider;
 import org.picketlink.common.PicketLinkLogger;
 import org.picketlink.common.PicketLinkLoggerFactory;
@@ -39,6 +40,7 @@ import org.picketlink.identity.federation.core.wstrust.WSTrustRequestContext;
 import org.picketlink.identity.federation.core.wstrust.WSTrustUtil;
 import org.picketlink.identity.federation.core.wstrust.plugins.saml.SAMLUtil;
 import org.picketlink.identity.federation.core.wstrust.wrappers.Lifetime;
+import org.picketlink.identity.federation.core.wstrust.wrappers.RequestSecurityToken;
 import org.picketlink.identity.federation.saml.v2.assertion.ActionType;
 import org.picketlink.identity.federation.saml.v2.assertion.AssertionType;
 import org.picketlink.identity.federation.saml.v2.assertion.AttributeStatementType;
@@ -83,6 +85,7 @@ import java.util.Map;
 public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
 
     private static final PicketLinkLogger logger = PicketLinkLoggerFactory.getLogger();
+    private CodedValueFactory codedValueFactory = new CodedValueFactory();
 
     /*
      * (non-Javadoc)
@@ -333,10 +336,34 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
 
             // V. The attribute PurposeOfUse shall be defined
             String currentPurposeOfUse = getPurposeOfUse(assertionElement);
+            logger.debug("POU: " + currentPurposeOfUse);
+
+            boolean hasPurposeOfUse = true;
             if (currentPurposeOfUse == null || currentPurposeOfUse.isEmpty()) {
                 code = WSTrustConstants.STATUS_CODE_INVALID;
                 reason = "Validation failure: PurposeOfUse attribute not present";
                 logger.error(reason);
+                hasPurposeOfUse = false;
+            }
+
+            // VI. Purpose of Use has to be a legal one
+            if (hasPurposeOfUse) {
+                String codingSystem = getPurposeOfUseCodingSystemUID(assertionElement);
+                logger.debug("POU coding system: " + codingSystem);
+                if (codingSystem == null || codingSystem.isEmpty()) {
+                    code = WSTrustConstants.STATUS_CODE_INVALID;
+                    reason = "Validation failure: PurposeOfUse codingSystem not present";
+                    logger.debug(reason);
+                } else {
+                    boolean flag = codedValueFactory.isSupportedCodedValue(currentPurposeOfUse, codingSystem);
+                    if (!flag) {
+                        code = WSTrustConstants.STATUS_CODE_INVALID;
+                        reason = "Validation failure: PurposeOfUse cpde/codingSystem not in table of allowed codes: " + currentPurposeOfUse + ":" + codingSystem;
+                        logger.debug(reason);
+                    } else {
+                        logger.debug("The PurposeOfUse code/codingSystem were found in the allowed codes.");
+                    }
+                }
             }
         }
 
@@ -469,6 +496,11 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
     protected String getPurposeOfUse(Element assertionElement) {
         NodeList nodeListPurposeofuse = assertionElement.getElementsByTagNameNS("*", "PurposeOfUse");
         return nodeListPurposeofuse.item(0).getAttributes().getNamedItem("code").getNodeValue();
+    }
+
+    protected String getPurposeOfUseCodingSystemUID(Element assertionElement) {
+        NodeList nodeListPurposeofuse = assertionElement.getElementsByTagNameNS("*", "PurposeOfUse");
+        return nodeListPurposeofuse.item(0).getAttributes().getNamedItem("codeSystem").getNodeValue();
     }
 
 }

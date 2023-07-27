@@ -9,6 +9,7 @@ import java.util.HashMap;
 public class CodedValueFactory {
 
     private HashMap<String, CodedValue> codedValueMap = null;
+    private HashMap<String, String> supportedCodedValues = null;
 
     public CodedValueFactory() {
 
@@ -23,6 +24,33 @@ public class CodedValueFactory {
             populateMap();
         }
         return codedValueMap.get(id);
+    }
+
+    public boolean isSupportedCodedValue(String code, String codingSystemUID) {
+        if (supportedCodedValues == null) {
+            populateSupportedCodedValues();
+        }
+        if (! supportedCodedValues.containsKey(code)) {
+            return false;
+        }
+        String uid = supportedCodedValues.get(code);
+        if (! codingSystemUID.equals(uid)) {
+            return false;
+        }
+        return true;
+    }
+
+    private void populateSupportedCodedValues() {
+        if (supportedCodedValues == null) {
+            supportedCodedValues = new HashMap<>();
+        }
+
+        supportedCodedValues.put("TREATMENT",    "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("PAYMENT",      "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("OPERATIONS",   "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("PUBLICHEALTH", "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("REQUEST",      "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("COVERAGE",     "2.16.840.1.113883.3.7204.1.5.2.1");
     }
 
     private void populateMap() {
