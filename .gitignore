@@ -15,4 +15,5 @@
 /gazelle-sts-service/target/
 
 # /gazelle-sts-constants
+gazelle-sts-constants/*.iml
 /gazelle-sts-constants/target/
