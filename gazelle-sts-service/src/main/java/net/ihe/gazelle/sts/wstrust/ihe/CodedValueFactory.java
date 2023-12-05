@@ -51,6 +51,15 @@ public class CodedValueFactory {
         supportedCodedValues.put("PUBLICHEALTH", "2.16.840.1.113883.3.7204.1.5.2.1");
         supportedCodedValues.put("REQUEST",      "2.16.840.1.113883.3.7204.1.5.2.1");
         supportedCodedValues.put("COVERAGE",     "2.16.840.1.113883.3.7204.1.5.2.1");
+
+        // Added 2023.11.20 to support QHIN 1.1
+        supportedCodedValues.put("T-TRTMNT",     "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("T-PYMNT",      "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("T-HCO",        "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("T-PH",         "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("T-IAS",        "2.16.840.1.113883.3.7204.1.5.2.1");
+        supportedCodedValues.put("T-GOVDTRM",    "2.16.840.1.113883.3.7204.1.5.2.1");
+        // End Add 2023.11.20
     }
 
     private void populateMap() {
@@ -63,6 +72,17 @@ public class CodedValueFactory {
             codedValueMap.put("PUBLICHEALTH", new CodedValue("PUBLICHEALTH","PUBLICHEALTH", "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Public Health"));
             codedValueMap.put("REQUEST",      new CodedValue("REQUEST",     "REQUEST",      "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Individual Access Services"));
             codedValueMap.put("COVERAGE",     new CodedValue("COVERAGE",    "COVERAGE",     "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Government Benefits Determination"));
+
+        // Added 2023.11.20 to support QHIN 1.1
+            codedValueMap.put("T-TRTMNT",     new CodedValue("T-TRTMNT",    "T-TRTMNT",     "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Treatment"));
+            codedValueMap.put("T-PYMNT",      new CodedValue("T-PYMNT",     "T-PYMNT",      "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Payment"));
+            codedValueMap.put("T-HCO",        new CodedValue("T-HCO",       "T-HCO",        "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Health Care Operations"));
+            codedValueMap.put("T-PH",         new CodedValue("T-PH",        "T-PH",         "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Public Health"));
+            codedValueMap.put("T-IAS",        new CodedValue("T-IAS",       "T-IAS",        "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Individual Access Services"));
+            codedValueMap.put("T-GOVDTRM",    new CodedValue("T-GOVDTRM",   "T-GOVDTRM",    "2.16.840.1.113883.3.7204.1.5.2.1","RCE-purpose","Government Benefits Determination"));
+
+
+        // End Add 2023.11.20
 
             // Code value is OK, but the coding system UID is wrong.
             codedValueMap.put("TREATMENTOID",    new CodedValue("TREATMENT",   "TREATMENT",    "2.16.840.1.113883.3.7204.1.5.2.199","QHIN Exchange Purpose","Treatment"));
