@@ -14,6 +14,7 @@ import org.picketlink.identity.federation.saml.v2.assertion.AttributeStatementTy
 import org.picketlink.identity.federation.saml.v2.assertion.AttributeStatementType.ASTChoiceType;
 import org.picketlink.identity.federation.saml.v2.assertion.AttributeType;
 
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -84,6 +85,19 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
      * Constant <code>PURPOSEOFUSE_NAME="urn:oasis:names:tc:xspa:1.0:subject:pur"{trunked}</code>
      */
     public static final String PURPOSEOFUSE_NAME = "urn:oasis:names:tc:xspa:1.0:subject:purposeofuse";
+
+    /* Patient Identifier is passed as part of ACP workflow */
+    /**
+     * Constant <code>PATIENT_IDENTIFIER_FRIENDLYNAME="Patient Identifier Friendly Name"</code>
+     */
+    public static final String PATIENT_IDENTIFIER_FRIENDLYNAME = "Patient Identifier Friendly Name";
+    /**
+     * Constant <code>PATIENT_IDENTIFIER_NAME="urn:oasis:names:tc:xacml:2.0:resource:resource-id"{trunked}</code>
+     */
+    public static final String PATIENT_IDENTIFIER_NAME = "urn:oasis:names:tc:xacml:2.0:resource:resource-id";
+
+
+
     private static final PicketLinkLogger logger = PicketLinkLoggerFactory.getLogger();
     private static final String DEFAULT_SUBJECTID_VALUE = "Default IHE Testing User";
 
@@ -97,6 +111,7 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
 
     // Add Steve Moore, 2023.04.01, to support code value lookup
     private final CodedValueFactory codedValueFactory = new CodedValueFactory();
+    private final AttributeValueFactory attributeValueFactory = new AttributeValueFactory();
 
     /**
      * {@inheritDoc}
@@ -164,6 +179,8 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
                 attributeStatement
                         .addAttribute(new ASTChoiceType(getHomeCommunityIdAttribute(homeCommunityIdAttributeAlternateName, homeCommunityIdAttributeValue)));
             }
+
+            //attributeStatement.addAttribute(new ASTChoiceType(getPatientIdentifierAttribute("My patient ID")));
 
             AttributeType roleAttribute = buildRoleAttribute(principalName, assertionProperties);
             attributeStatement.addAttribute(new ASTChoiceType(roleAttribute));
@@ -242,6 +259,28 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
         String valueValidatedAttributes = assertionProperties.getProperty(keyValidatedAttributes);
         statement = addAttribute(statement, valueValidatedAttributes);
 
+        if (principalName.startsWith(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())) {
+            String[] tokens = principalName.split("\\.");
+            String identifier = tokens[1];
+            System.out.println("In Augment, identifier = " + identifier);
+            AttributeSet attributeSet = attributeValueFactory.getAttributeSet(identifier);
+            if (attributeSet != null) {
+                System.out.println(attributeSet.getKey());
+                Iterator<Attribute> itY = attributeSet.getListOfAttributes().iterator();
+                while (itY.hasNext()) {
+                    Attribute attribute = itY.next();
+                    String name         = attribute.getName();
+                    String friendlyName = attribute.getFriendlyName();
+                    String nameFormat   = attribute.getNameFormat();
+                    String value        = attribute.getAttributeValue().getValue();
+                    statement = addAttribute(statement, name, friendlyName, nameFormat, value);
+
+                    System.out.println(attribute.getFriendlyName() + " " + attribute.getAttributeValue().getValue());
+                }
+            }
+        }
+
+
         return statement;
     }
 
@@ -272,6 +311,14 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
         }
         return statement;
     }
+
+    private AttributeStatementType addAttribute(AttributeStatementType statement, String name,
+                                                String friendlyName, String nameFormat, String attributeValue) {
+        statement.addAttribute(new ASTChoiceType(getAttribute(name, friendlyName, nameFormat, attributeValue)));
+
+        return statement;
+    }
+
 
     /**
      * <p>getOrganizationAttribute.</p>
@@ -430,6 +477,10 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
                                                      String displayName) {
         return getHL7v3CodedElementAttribute(PURPOSEOFUSE_NAME, new PurposeOfUse(), code, codeSystem, codeSystemName,
                 displayName);
+    }
+
+    protected AttributeType getPatientIdentifierAttribute(String attributeValue) {
+        return getAttribute(PATIENT_IDENTIFIER_NAME, PATIENT_IDENTIFIER_FRIENDLYNAME, "Unknown_format_for_patient_identifier", attributeValue);
     }
 
     /**

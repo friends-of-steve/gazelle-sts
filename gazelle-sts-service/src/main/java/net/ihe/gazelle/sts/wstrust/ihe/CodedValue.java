@@ -2,15 +2,26 @@
  */
 package net.ihe.gazelle.sts.wstrust.ihe;
 
+import javax.xml.bind.annotation.*;
 /**
  */
+
+@XmlRootElement(name = "CodedValue")
+@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlRootElement()
 public class CodedValue {
 
     private String id;
+//    @XmlAttribute(name = "code")
     private String code;
+//    @XmlAttribute(name = "codingSystemUID")
     private String codingSystemUID;
+//    @XmlAttribute(name = "codingSystemName")
     private String codingSystemName;
+//    @XmlAttribute(name = "displayName")
     private String displayName;
+
+    public CodedValue() {}
 
     public CodedValue(String id, String code, String codingSystemUID, String codingSystemName, String displayName) {
         this.id = id;
