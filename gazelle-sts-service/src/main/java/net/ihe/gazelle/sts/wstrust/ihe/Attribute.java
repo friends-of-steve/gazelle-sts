@@ -17,6 +17,8 @@ public class Attribute {
     private String mName;
     @XmlAttribute(name="NameFormat")
     private String mNameFormat;
+    @XmlAttribute(name="Action")
+    private String mAction;
 
     @XmlElement(name="AttributeValue")
     private AttributeValue mAttributeValue;
@@ -50,4 +52,8 @@ public class Attribute {
     public void setAttributeValue(AttributeValue attributeValue) {
         mAttributeValue = attributeValue;
     }
+
+    public String getmAction() { return mAction; }
+
+    public void setmAction(String action) { this.mAction = action; }
 }

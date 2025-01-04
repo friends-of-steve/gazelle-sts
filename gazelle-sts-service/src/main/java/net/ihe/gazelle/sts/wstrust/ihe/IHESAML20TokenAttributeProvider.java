@@ -15,6 +15,7 @@ import org.picketlink.identity.federation.saml.v2.assertion.AttributeStatementTy
 import org.picketlink.identity.federation.saml.v2.assertion.AttributeType;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -273,7 +274,11 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
                     String friendlyName = attribute.getFriendlyName();
                     String nameFormat   = attribute.getNameFormat();
                     String value        = attribute.getAttributeValue().getValue();
-                    statement = addAttribute(statement, name, friendlyName, nameFormat, value);
+                    String action       = attribute.getmAction();
+                    action = (action == null) ? "create" : action;
+                    System.out.println(attribute.getName() + " " + attribute.getmAction());
+                    //statement = addAttribute(statement, name, friendlyName, nameFormat, value);
+                    statement = processAugmentedAttribute(statement, action, name, friendlyName, nameFormat, value);
 
                     System.out.println(attribute.getFriendlyName() + " " + attribute.getAttributeValue().getValue());
                 }
@@ -281,6 +286,32 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
         }
 
 
+        return statement;
+    }
+
+
+    private AttributeStatementType processAugmentedAttribute(AttributeStatementType statement, String action,
+                                                             String name, String friendlyName, String nameFormat, String attributeValue) {
+        if (action == null) {
+            System.out.println("Unexpected null action for Attribute with Name: " + name);
+            return statement;
+        }
+        System.out.println(action + " " + name);
+        switch (action) {
+            case "create":
+                statement = addAttribute(statement, name, friendlyName, nameFormat, attributeValue);
+                break;
+            case "update":
+                statement = updateAttribute(statement, name, friendlyName, nameFormat, attributeValue);
+                break;
+            case "delete":
+                statement = deleteAttribute(statement, name);
+                break;
+            default:
+                System.out.println("Unrecgonized action in processAugmentedAttribute: " + action);
+                System.out.println("Attribute Name: " + name);
+                break;
+        }
         return statement;
     }
 
@@ -318,6 +349,34 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
 
         return statement;
     }
+
+    private AttributeStatementType deleteAttribute(AttributeStatementType statement, String name) {
+
+        List<ASTChoiceType> attributeList = statement.getAttributes();
+        ASTChoiceType attrToDelete = null;
+        Iterator<ASTChoiceType> iterator = attributeList.iterator();
+        while (iterator.hasNext() && attrToDelete == null) {
+            ASTChoiceType tmp = iterator.next();
+            if (name.equals(tmp.getAttribute().getName())) {
+                attrToDelete = tmp;
+            }
+        }
+//        ASTChoiceType attr = new ASTChoiceType(getAttribute(name, "", "", ""));
+        if (attrToDelete != null) {
+            statement.removeAttribute(attrToDelete);
+        }
+
+        return statement;
+    }
+
+    private AttributeStatementType updateAttribute(AttributeStatementType statement, String name,
+                                                   String friendlyName, String nameFormat, String attributeValue) {
+        statement = deleteAttribute(statement, name);
+        statement = addAttribute(statement, name, friendlyName, nameFormat, attributeValue);
+
+        return statement;
+    }
+
 
 
     /**

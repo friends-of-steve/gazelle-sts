@@ -38,6 +38,7 @@ public class CodedValueFactory {
      */
 
     public CodedValue getCodedValue(String id) {
+        System.out.println("Get Coded Value: " + id);
         if (allCodes == null) {
             populateAllCodes();
         }
@@ -171,6 +172,7 @@ public class CodedValueFactory {
 
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Codes codes = (Codes) unmarshaller.unmarshal(new File(path));
+            System.out.println("Successfully read codes from: " + path);
             return codes;
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,6 +187,7 @@ public class CodedValueFactory {
         while (it.hasNext()) {
             CodedValue c = it.next();
             map.put(c.getId(), c);
+            System.out.println("Code ID: " + c.getId());
         }
         return map;
     }
