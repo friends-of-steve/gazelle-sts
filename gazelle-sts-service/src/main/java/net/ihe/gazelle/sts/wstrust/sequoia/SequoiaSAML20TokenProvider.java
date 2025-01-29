@@ -226,14 +226,14 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
         }
 
         String code = WSTrustConstants.STATUS_CODE_VALID;
-        String reason = "SAMLV2.0 Assertion successfuly validated (with NO Authz-Consent option)";
+        String reason = "Gazelle STS SAMLV2.0 Assertion successfully validated (with NO Authz-Consent option)";
 
         //pasre assertion
         AssertionType assertion = null;
         Element assertionElement = (Element) token.getFirstChild();
         if (!this.isAssertion(assertionElement)) {
             code = WSTrustConstants.STATUS_CODE_INVALID;
-            reason = "Validation failure: supplied token is not a SAMLV2.0 Assertion";
+            reason = "Gazelle STS Validation failure: supplied token is not a SAMLV2.0 Assertion";
         } else {
             try {
                 if (logger.isTraceEnabled()) {
@@ -249,7 +249,7 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
             // check if the assertion has been canceled before.
             if (this.revocationRegistry.isRevoked(SAMLUtil.SAML2_TOKEN_TYPE, assertion.getID())) {
                 code = WSTrustConstants.STATUS_CODE_INVALID;
-                reason = "Validation failure: assertion with id " + assertion.getID() + " has been canceled";
+                reason = "Gazelle STS Validation failure: assertion with id " + assertion.getID() + " has been canceled";
             }
 
             /*
@@ -276,11 +276,11 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
                 }
                 if (!validAudience) {
                     code = WSTrustConstants.STATUS_CODE_INVALID;
-                    reason = "Validation failure: Missing URI of X-Service_Provider in audience restriction";
+                    reason = "Gazelle STS Validation failure: Missing URI of X-Service_Provider in audience restriction";
                 }
             } else {
                 code = WSTrustConstants.STATUS_CODE_INVALID;
-                reason = "Assertion should have conditions elements";
+                reason = "Gazelle STS Validation failure: Assertion should have conditions elements";
             }
 
 
@@ -293,7 +293,7 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
                 }
             } catch (Exception ce) {
                 code = WSTrustConstants.STATUS_CODE_INVALID;
-                reason = "Validation failure: unable to verify assertion lifetime: " + ce.getMessage();
+                reason = "Gazelle STS Validation failure: unable to verify assertion lifetime: " + ce.getMessage();
             }
 
 
@@ -323,14 +323,14 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
 
             } catch (Exception ce) {
                 code = WSTrustConstants.STATUS_CODE_INVALID;
-                reason = "Validation failure: unable to verify AuthContextClassRef value: " + ce.getMessage();
+                reason = "Gazelle STS Validation failure: unable to verify AuthContextClassRef value: " + ce.getMessage();
             }
 
             // IV. The attribute Role shall be defined
             String currentRole = getRole(assertionElement);
             if (currentRole == null || currentRole.isEmpty()) {
                 code = WSTrustConstants.STATUS_CODE_INVALID;
-                reason = "Validation failure: Role attribute not present";
+                reason = "Gazelle STS Validation failure: Role attribute not present";
                 logger.error(reason);
             }
 
@@ -341,27 +341,28 @@ public class SequoiaSAML20TokenProvider extends IHESAML20TokenProvider {
             boolean hasPurposeOfUse = true;
             if (currentPurposeOfUse == null || currentPurposeOfUse.isEmpty()) {
                 code = WSTrustConstants.STATUS_CODE_INVALID;
-                reason = "Validation failure: PurposeOfUse attribute not present";
+                reason = "Gazelle STS Validation failure: PurposeOfUse attribute not present";
                 logger.error(reason);
                 hasPurposeOfUse = false;
             }
 
-            // VI. Purpose of Use has to be a legal one
+            // VI. Purpose of Use has to be an authorized one
             if (hasPurposeOfUse) {
                 String codingSystem = getPurposeOfUseCodingSystemUID(assertionElement);
                 logger.debug("POU coding system: " + codingSystem);
                 if (codingSystem == null || codingSystem.isEmpty()) {
                     code = WSTrustConstants.STATUS_CODE_INVALID;
-                    reason = "Validation failure: PurposeOfUse codingSystem not present";
+                    reason = "Gazelle STS Validation failure: PurposeOfUse codingSystem not present";
                     logger.debug(reason);
                 } else {
                     boolean flag = codedValueFactory.isSupportedCodedValue(currentPurposeOfUse, codingSystem);
-                    if (!flag) {
-                        code = WSTrustConstants.STATUS_CODE_INVALID;
-                        reason = "Validation failure: PurposeOfUse cpde/codingSystem not in table of allowed codes: " + currentPurposeOfUse + ":" + codingSystem;
-                        logger.debug(reason);
+                    if (flag) {
+                        // Flag == true is the success path
+                        logger.debug("The PurposeOfUse code/codingSystem were found in the authorized codes.");
                     } else {
-                        logger.debug("The PurposeOfUse code/codingSystem were found in the allowed codes.");
+                        code = WSTrustConstants.STATUS_CODE_INVALID;
+                        reason = "Gazelle STS Validation failure: PurposeOfUse code/codingSystem not in Gazelle STS table of authorized codes: " + currentPurposeOfUse + ":" + codingSystem;
+                        logger.warn(reason);
                     }
                 }
             }

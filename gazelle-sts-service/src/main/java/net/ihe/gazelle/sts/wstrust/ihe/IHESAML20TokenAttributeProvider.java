@@ -490,6 +490,10 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
             String[] tokens = principalName.split("\\.");
             String identifier = tokens[1];
             CodedValue codedValue = codedValueFactory.getCodedValue(identifier);
+            if (codedValue == null) {
+                logger.error("IHESAML20TokenAttributeProvider::buildPurposeOfUseAttribute Did not find a coded value for this identifier/key: " + identifier);
+                // We are going to now let this drop through and force a fault
+            }
             purposeofuseAttributeValueCode           = codedValue.getCode();
             purposeofuseAttributeValueCodeSystem     = codedValue.getCodingSystemUID();
             purposeofuseAttributeValueCodeSystemName = codedValue.getCodingSystemName();
