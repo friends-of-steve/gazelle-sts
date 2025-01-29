@@ -2,6 +2,9 @@
  */
 package net.ihe.gazelle.sts.wstrust.ihe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -11,6 +14,7 @@ import java.util.*;
 /**
  */
 public class CodedValueFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(CodedValueFactory.class);
 
     // This is a map from an identifier to a coded value
     // By practice, the identifier can be similar to the coded value
@@ -38,11 +42,17 @@ public class CodedValueFactory {
      */
 
     public CodedValue getCodedValue(String id) {
-        System.out.println("Get Coded Value: " + id);
+        //System.out.println("Get Coded Value: " + id);
+        LOG.debug("CodedValueFactory::getCodedValue key = " + id);
         if (allCodes == null) {
             populateAllCodes();
         }
-        return allCodes.get(id);
+        CodedValue codedValue = allCodes.get(id);
+        if (codedValue == null) {
+            LOG.error("CodedValueFactory::getCodedValue Unable to find coded value for key = " + id);
+            LOG.error("CodedValueFactory::getCodedValue Look for the map of values in /opt/sts/allCodes.xml");
+        }
+        return codedValue;
     }
 
     public boolean isSupportedCodedValue(String code, String codingSystemUID) {
@@ -61,10 +71,20 @@ public class CodedValueFactory {
     private void populateInboundSupportedCodedValues() {
         if (inboundSupportedCodedValues == null) {
             inboundSupportedCodedValues = convertCodeListToSet(readCodeValueMap("/opt/sts/inboundSupportedCodes.xml"));
-            if (inboundSupportedCodedValues == null) {
-                System.out.println("ERROR: Did not find or read /opt/sts/inboundSupportedCodes.xml. We are reverting to hard-coded set");
+            if (inboundSupportedCodedValues != null) {
+                // This should be executed one time when this method reads the supported set of inbound codes.
+                // Log each coded value for diagnostic work that will happen much later.
+                LOG.error("Set of inbound supported codes will now be logged at ERROR level to ensure they are visible.");
+                Iterator<String> it = inboundSupportedCodedValues.iterator();
+                while (it.hasNext()) {
+                    String code = it.next();
+                    LOG.error(code);
+                }
+            } else {
+                LOG.error("ERROR: Did not find or read /opt/sts/inboundSupportedCodes.xml. Only default inbound code values will be supported");
                 inboundSupportedCodedValues = new HashSet<>();
-                inboundSupportedCodedValues.add(   "TREATMENT:2.16.840.1.113883.3.7204.1.5.2.1");
+
+/*                inboundSupportedCodedValues.add(   "TREATMENT:2.16.840.1.113883.3.7204.1.5.2.1");
                 inboundSupportedCodedValues.add(     "PAYMENT:2.16.840.1.113883.3.7204.1.5.2.1");
                 inboundSupportedCodedValues.add(  "OPERATIONS:2.16.840.1.113883.3.7204.1.5.2.1");
                 inboundSupportedCodedValues.add("PUBLICHEALTH:2.16.840.1.113883.3.7204.1.5.2.1");
@@ -83,18 +103,21 @@ public class CodedValueFactory {
                 // Added 2024.09.28 to support eHx ACP
                 inboundSupportedCodedValues.add(       "COVERAGE:2.16.840.1.113883.3.18.7.1");
                 // End Add 2024.09.28
+
+ */
             }
         }
     }
 
     private void populateAllCodes() {
         if (allCodes == null) {
+            LOG.debug("CodedValueFactory::populateAllCodes: read from hardcoded path /opt/sts/allCodes.xml");
             allCodes = convertCodeListToFullMap(readCodeValueMap("/opt/sts/allCodes.xml"));
             if (allCodes == null) {
-                System.out.println("ERROR: Did not find or read /opt/sts/allCodes.xml. We are reverting to hard-coded map");
+                LOG.warn("ERROR: Did not find or read /opt/sts/allCodes.xml. Only default code values for output will be supported");
 
                 allCodes = new HashMap<>();
-
+/*
                 allCodes.put("TREATMENT", new CodedValue("TREATMENT", "TREATMENT", "2.16.840.1.113883.3.7204.1.5.2.1", "RCE-purpose", "Treatment"));
                 allCodes.put("PAYMENT", new CodedValue("PAYMENT", "PAYMENT", "2.16.840.1.113883.3.7204.1.5.2.1", "RCE-purpose", "Payment"));
                 allCodes.put("OPERATIONS", new CodedValue("OPERATIONS", "OPERATIONS", "2.16.840.1.113883.3.7204.1.5.2.1", "RCE-purpose", "Health Care Operations"));
@@ -149,6 +172,8 @@ public class CodedValueFactory {
                 allCodes.put("ACP-Simonis",  new CodedValue("ACP-Simonis",  "COVERAGE", "2.16.840.1.113883.3.18.7.1", "nhin-purpose", "Disclosures for insurance or disability coverage determination"));
                 allCodes.put("ACP-West",     new CodedValue("ACP-West",     "COVERAGE", "2.16.840.1.113883.3.18.7.1", "nhin-purpose", "Disclosures for insurance or disability coverage determination"));
                 // End add 2024.09.28
+
+ */
             }
         }
     }
@@ -156,25 +181,12 @@ public class CodedValueFactory {
     private Codes readCodeValueMap(final String path) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(Codes.class);
-/*
-            Codes x = new Codes();
-            List<CodedValue> l = new ArrayList<>();
-            CodedValue codedValue = new CodedValue("ID", "code", "codingSystemUID", "systemName", "displayName");
-            l.add(codedValue);
-            CodedValue c2 = new CodedValue("id-2", "code-2", "uid-2", "name-2", "display-2");
-            l.add(c2);
-            x.setCodedValues(l);
-            Marshaller m = jaxbContext.createMarshaller();
-            m.marshal(x, System.out);
-            System.out.println("Marshall done");
-
- */
-
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Codes codes = (Codes) unmarshaller.unmarshal(new File(path));
-            System.out.println("Successfully read codes from: " + path);
+            LOG.debug("Successfully read codes from: " + path);
             return codes;
         } catch (Exception e) {
+            LOG.error("Unable to read codes from: " + path);
             e.printStackTrace();
             return null;
         }
