@@ -18,12 +18,13 @@
         <url>https://gazelle.ihe.net/jira/browse/STS</url>
     </issueManagement>
 
+
     <scm>
-        <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/gazelle/Maven/gazelle-sts/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/gazelle/Maven/gazelle-sts/trunk
-        </developerConnection>
-        <url>https://gforge.inria.fr/scm/viewvc.php/Maven/gazelle-sts/trunk/?root=gazelle</url>
+        <connection>scm:git:${git.project.url}</connection>
+        <url>scm:git:${git.project.url}</url>
+        <developerConnection>scm:git:${git.project.url}</developerConnection>
     </scm>
+
 
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
