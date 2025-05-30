@@ -19,6 +19,8 @@ public class Attribute {
     private String mNameFormat;
     @XmlAttribute(name="Action")
     private String mAction;
+    @XmlAttribute(name="FileName")
+    private String mFileName;
 
     @XmlElement(name="AttributeValue")
     private AttributeValue mAttributeValue;
@@ -54,6 +56,8 @@ public class Attribute {
     }
 
     public String getmAction() { return mAction; }
-
     public void setmAction(String action) { this.mAction = action; }
+
+    public String getmFileName() { return mFileName; }
+    public void setmFileName(String mFileName) { this.mFileName = mFileName; }
 }

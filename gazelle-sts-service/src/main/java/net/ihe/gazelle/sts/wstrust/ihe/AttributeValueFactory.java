@@ -2,15 +2,27 @@
  */
 package net.ihe.gazelle.sts.wstrust.ihe;
 
+import org.picketlink.common.PicketLinkLogger;
+import org.picketlink.common.PicketLinkLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Attr;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
  */
 public class AttributeValueFactory {
+    //private static final Logger LOG = LoggerFactory.getLogger(AttributeValueFactory.class);
+    private static final PicketLinkLogger LOG = PicketLinkLoggerFactory.getLogger();
 
     private Map<String, AttributeSet> outboundSAMLAttributes = null;
 
@@ -24,9 +36,49 @@ public class AttributeValueFactory {
 
         }
         if (outboundSAMLAttributes != null) {
-            return outboundSAMLAttributes.get(key);
+            AttributeSet staticSet = outboundSAMLAttributes.get(key);
+            return CopyAndSubstituteAttributeValues(staticSet);
         } else {
             return null;
+        }
+    }
+
+    /* TODO: This needs to be fixed. It is used differently for different reasons. Not good */
+    /* Look through the elements. If an element has an attribute that points to a file name,
+       fill in the value of the element with that file name.
+     */
+    private AttributeSet CopyAndSubstituteAttributeValues(AttributeSet inputAttributes) {
+        if (inputAttributes == null) {
+            return inputAttributes;
+        } else if (inputAttributes.getListOfAttributes() == null) {
+            return inputAttributes;
+        }
+
+        AttributeSet outputSet = new AttributeSet();
+        Iterator<Attribute> iterator = inputAttributes.getListOfAttributes().iterator();
+        while (iterator.hasNext()) {
+            Attribute attribute = iterator.next();
+            if (attribute.getmFileName() != null) {
+                String textValue = readString(attribute.getmFileName());
+                AttributeValue av = attribute.getAttributeValue();
+                av.setValue(textValue);
+                attribute.setAttributeValue(av);
+                attribute.setmFileName(null);
+            }
+            outputSet.addAttribute(attribute);
+        }
+        return outputSet;
+    }
+
+    private String readString(String path) {
+        try {
+            LOG.error("ReadString: " + path);
+            byte[] bytes = Files.readAllBytes(Paths.get(path));
+            String str = new String(bytes, StandardCharsets.UTF_8);
+            LOG.error(str);
+            return str;
+        } catch (Exception e) {
+            return "STS runtime error, unable to read attribute value from " + path;
         }
     }
 

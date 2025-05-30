@@ -260,10 +260,16 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
         String valueValidatedAttributes = assertionProperties.getProperty(keyValidatedAttributes);
         statement = addAttribute(statement, valueValidatedAttributes);
 
+        // TODO: Check logs; we should not get here
+        if (principalName.equals(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())) {
+            return getAttributeStatement();
+        }
+
         if (principalName.startsWith(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())) {
+            logger.error("About to split tokens for " + principalName);
             String[] tokens = principalName.split("\\.");
             String identifier = tokens[1];
-            System.out.println("In Augment, identifier = " + identifier);
+            logger.error("In Augment, identifier = " + identifier);
             AttributeSet attributeSet = attributeValueFactory.getAttributeSet(identifier);
             if (attributeSet != null) {
                 System.out.println(attributeSet.getKey());
