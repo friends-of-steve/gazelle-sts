@@ -40,6 +40,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by cel on 12/06/17.
@@ -53,9 +55,11 @@ public class IHEWSTRequestSecurityTokenParser extends WSTRequestSecurityTokenPar
 
     /** {@inheritDoc} */
     public Object parse(XMLEventReader xmlEventReader) throws ParsingException {
+        logger.error("IHEWSTRequestSecurityTokenParser::parse");
         StartElement startElement = StaxParserUtil.getNextStartElement(xmlEventReader);
 
         RequestSecurityToken requestToken = new RequestSecurityToken();
+        Map<String, String> extensionMap = new HashMap<>();
 
         QName contextQName = new QName("", WSTrustConstants.RST_CONTEXT);
         Attribute contextAttribute = startElement.getAttributeByName(contextQName);
@@ -276,6 +280,16 @@ public class IHEWSTRequestSecurityTokenParser extends WSTRequestSecurityTokenPar
                     requestToken.setComputedKeyAlgorithm(URI.create(computedKeyAlgo));
                 } else if (tag.equals(WSTrustConstants.RENEWING)) {
                     requestToken.setRenewing(WSTrustUtil.parseRenewingType(xmlEventReader));
+                } else if (tag.equals("HomeCommunityId")) {
+                    subEvent = StaxParserUtil.getNextStartElement(xmlEventReader);
+
+                    if (!StaxParserUtil.hasTextAhead(xmlEventReader)) {
+                        throw new ParsingException(ErrorCodes.EXPECTED_TEXT_VALUE + "HomeCommunityId");
+                    }
+
+                    String value = StaxParserUtil.getElementText(xmlEventReader);
+                    extensionMap.put("HomeCommunityId", value);
+                    logger.error("Added to extensionMap: " + value);
                 } else {
                     QName qname = subEvent.getName();
 
@@ -295,6 +309,7 @@ public class IHEWSTRequestSecurityTokenParser extends WSTRequestSecurityTokenPar
                 throw new ParsingException(e);
             }
         }
+        requestToken.addExtensionElement(extensionMap);
 
         return requestToken;
     }
