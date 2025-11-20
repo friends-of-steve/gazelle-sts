@@ -57,7 +57,11 @@ public class AttributeValueFactory {
         AttributeSet outputSet = new AttributeSet();
         Iterator<Attribute> iterator = inputAttributes.getListOfAttributes().iterator();
         while (iterator.hasNext()) {
-            Attribute attribute = iterator.next();
+            // Clone the attribute so that the original remains unchanged.
+            // In the 'if' clause below, we will modify the attribute.
+            // Next time we come back to this method, we still want the original
+            // version of the attribute in the event that the file content was updated.
+            Attribute attribute = iterator.next().clone();
             if (attribute.getmFileName() != null) {
                 String textValue = readString(attribute.getmFileName());
                 AttributeValue av = attribute.getAttributeValue();

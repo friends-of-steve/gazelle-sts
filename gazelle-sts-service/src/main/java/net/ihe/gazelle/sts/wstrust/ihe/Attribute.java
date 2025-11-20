@@ -60,4 +60,15 @@ public class Attribute {
 
     public String getmFileName() { return mFileName; }
     public void setmFileName(String mFileName) { this.mFileName = mFileName; }
+
+    public Attribute clone() {
+        Attribute c = new Attribute();
+        c.setFriendlyName(this.mFriendlyName);
+        c.setName(this.mName);
+        c.setNameFormat(this.mNameFormat);
+        c.setAttributeValue(this.mAttributeValue);
+        c.setmAction(this.mAction);
+        c.setmFileName(this.mFileName);
+        return c;
+    }
 }
