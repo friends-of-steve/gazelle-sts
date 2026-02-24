@@ -74,6 +74,7 @@ public class STSLoginModule extends UsernamePasswordLoginModule {
      */
     protected String getUsersPassword() {
         String username = this.getUsername().split("\\.")[0];
+        PRIVATE_LOG.debug("In getUsersPassword, username = " + username);
         String password = null;
         if (username != null) {
             password = AssertionProfile.getFromName(username).getPassword();

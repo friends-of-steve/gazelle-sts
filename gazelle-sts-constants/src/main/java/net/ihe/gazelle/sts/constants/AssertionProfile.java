@@ -52,6 +52,7 @@ public enum AssertionProfile {
     SECOND_AUTHN_CONTEXT_CLASS_REF("secondauthncontext"),
     SECOND_ROLE("secondrole"),
     SECOND_PURPOSE_OF_USE("secondpurposeofuse"),
+    CODED_XP("codedXP"),
     WITH_AUTHZ_CONSENT("withauthzconsent"),
     ACP_VALID("acpvalid"),
     TRUSTPROPERTY_AND_INVALIDMODULUS("trustpropertyandinvalidmodulus"),

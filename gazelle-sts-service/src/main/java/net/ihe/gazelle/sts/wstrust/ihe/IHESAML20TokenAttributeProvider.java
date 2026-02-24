@@ -261,11 +261,11 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
         statement = addAttribute(statement, valueValidatedAttributes);
 
         // TODO: Check logs; we should not get here
-        if (principalName.equals(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())) {
+        if (principalName.equals(AssertionProfile.SECOND_PURPOSE_OF_USE.getName()) || principalName.equals(AssertionProfile.CODED_XP.getName())) {
             return getAttributeStatement();
         }
 
-        if (principalName.startsWith(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())) {
+        if (principalName.startsWith(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())|| principalName.startsWith(AssertionProfile.CODED_XP.getName())) {
             logger.error("About to split tokens for " + principalName);
             String[] tokens = principalName.split("\\.");
             String identifier = tokens[1];
@@ -492,7 +492,7 @@ public class IHESAML20TokenAttributeProvider implements ExtendedSAML20TokenAttri
                     AssertionProperties.Keys.ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_CODESYSTEMNAME);
             purposeofuseAttributeValueDisplayName = assertionProperties.getProperty(
                     AssertionProperties.Keys.ATTRIBUTESTATEMENT_PURPOSEOFUSE_LEVEL2_DISPLAYNAME);
-        } else if (principalName.startsWith(AssertionProfile.SECOND_PURPOSE_OF_USE.getName())) {
+        } else if (principalName.startsWith(AssertionProfile.SECOND_PURPOSE_OF_USE.getName()) || principalName.startsWith(AssertionProfile.CODED_XP.getName())) {
             String[] tokens = principalName.split("\\.");
             String identifier = tokens[1];
             CodedValue codedValue = codedValueFactory.getCodedValue(identifier);
